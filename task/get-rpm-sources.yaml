@@ -1,0 +1,226 @@
+---
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  annotations:
+    tekton.dev/tags: rpm-build
+  name: get-rpm-sources
+spec:
+  description: |-
+    Download source files referenced by a spec file.
+  params:
+    - description: Package name to clone
+      name: package-name
+      type: string
+    - description: The Trusted Artifact URI pointing to the artifact with the source code.
+      name: source-artifact
+      type: string
+    - name: ociStorage
+      description: The OCI repository where the Trusted Artifacts are stored.
+      type: string
+    - name: ociArtifactExpiresAfter
+      description: How long Trusted Artifacts should be retained
+      type: string
+    - description: RPM Build environment OCI image to run scripts in
+      name: script-environment-image
+      type: string
+    - description: Is the build hermetic?
+      name: hermetic
+      type: string
+    - description: List of architectures we build RPMs for
+      name: build-architectures
+      type: array
+  results:
+    - name: dependencies-artifact
+      description: The Trusted Artifact URI pointing to the artifact with the rpm deps and source.
+      type: string
+    - name: skip-mpc-tasks
+      description: |
+        The RPM Build Pipeline tasks depend on each other (subsequent tasks
+        consume results from previous tasks).  These dependencies are
+        declaratively specified, and if a task is skipped and doesn't provide
+        results, the subsequent task is skipped as well.  But we need the
+        Pipeline to continue.  For this reason, we don't skip tasks — instead,
+        we perform a no-op ("do nothing") inside the task, if needed.
+
+        Here's where another complication arises; the Multi-Platform Controller
+        in Konflux allocates architecture-specific VMs for us, even if a task is
+        effectively doing nothing.  To work around this, we use the concept of
+        PLATFORM=localhost, which prevents this VM allocation.  This Tekton step
+        is used to programmatically determine which MPC-dependent tasks should
+        be "skipped".
+
+        Related issues
+        - https://github.com/tektoncd/pipeline/issues/3749
+        - https://github.com/tektoncd/pipeline/issues/1684
+        - https://github.com/tektoncd/pipeline/issues/1023
+      properties:
+        deps-ppc64le:
+          type: string
+        deps-x86_64:
+          type: string
+        deps-s390x:
+          type: string
+        deps-aarch64:
+          type: string
+        deps-i686:
+          type: string
+        build-ppc64le:
+          type: string
+        build-x86_64:
+          type: string
+        build-s390x:
+          type: string
+        build-aarch64:
+          type: string
+        build-i686:
+          type: string
+  stepTemplate:
+    volumeMounts:
+      - mountPath: /var/workdir
+        name: workdir
+  steps:
+    - name: use-trusted-artifact
+      image: quay.io/redhat-appstudio/build-trusted-artifacts:latest@sha256:9b180776a41d9a22a1c51539f1647c60defbbd55b44bbebdd4130e33512d8b0d
+      args:
+        - use
+        - $(params.source-artifact)=/var/workdir/source
+    - name: download
+      image: $(params.script-environment-image)
+      script: |
+        set -x
+        cd "/var/workdir/source"
+        dist-git-client --forked-from https://src.fedoraproject.org/rpms/$(params.package-name) sources
+    - name: select-mpc-machines-or-skip
+      image: $(params.script-environment-image)
+      args:
+        - "$(params.build-architectures[*])"
+      script: |
+        #! /usr/bin/python3
+        import glob
+        import json
+        import os
+        import random
+        import sys
+        from specfile import Specfile
+
+        def safe_attr(name, tags):
+            """
+            Return evaluated spec file attribute or empty string
+            """
+            try:
+                return getattr(tags, name).expanded_value
+            except AttributeError:
+                return ""
+
+        def get_arches(name, tags):
+            """
+            Evaluated %{exclusivearch|excludearch|buildarch} as a list
+            """
+            name_map = {
+            'exclusivearch': 'ExclusiveArch',
+            'excludearch': 'ExcludeArch',
+            'buildarch': 'BuildArch',
+            }
+            values = safe_attr(name, tags).split()
+            unknown = " ".join([x for x in values if x.startswith("%")])
+            if unknown:
+                log.warning("Unknown macros in %s: %s", (name_map[name], unknown))
+                return []
+            return values
+
+        def get_specfile():
+            specfile_path = glob.glob(os.path.join('/var/workdir/source', '*.spec'))
+
+            if len(specfile_path) == 0:
+                raise RuntimeError("no spec file available")
+
+            if len(specfile_path) > 1:
+                raise RuntimeError("too many specfiles: {0}".format(
+                    ', '.join(specfile_path)
+                ))
+
+            try:
+                spec = Specfile(specfile_path[0])
+            except TypeError as ex:
+                raise RuntimeError("No .spec file") from ex
+            except OSError as ex:
+                raise RuntimeError(ex) from ex
+
+            return spec
+
+        selected_architectures = sys.argv[1:]
+        print(f"Trying to build for {selected_architectures}")
+
+        spec = get_specfile()
+
+        tags = spec.tags(spec.parsed_sections.package).content
+        arches = {}
+        for name in ['exclusivearch', 'excludearch', 'buildarch']:
+            arches[name] = get_arches(name, tags)
+
+        architecture_decision = {
+            "deps-x86_64": "linux/amd64",
+            "deps-i686": "linux/amd64",
+            "deps-aarch64": "linux/arm64",
+            "deps-s390x": "linux/s390x",
+            "deps-ppc64le": "linux/ppc64le",
+            "build-x86_64": "linux/amd64",
+            "build-i686": "linux/amd64",
+            "build-aarch64": "linux/arm64",
+            "build-s390x": "linux/s390x",
+            "build-ppc64le": "linux/ppc64le",
+        }
+
+        # Set the value to 'localhost' if you want to skip the corresponding
+        # task (the tasks are modified so they do nothing on localhost).
+        if "$(params.hermetic)" != "true":
+            for key in architecture_decision.keys():
+                if key.startswith("deps-"):
+                    print(f"non-hermetic build, disabling {key} task")
+                    architecture_decision[key] = "localhost"
+        if arches == ['noarch']:
+            # when exclusivearch
+            if arches['exclusivearch']:
+                build_arches = arches['exclusivearch']
+                # remove excludeArches
+                build_arches = list(set(build_arches) - set(arches['excludearch']))
+            else:
+                # default build arches
+                build_arches = ['x86_64', 'i686', 'aarch64', 's390x', 'ppc64le']
+                # build arches without excludeArch
+                build_arches = list(set(build_arches) - set(arches['excludearch']))
+            selected_architectures = [random.choice(build_arches)]
+
+
+        # skip disabled architectures
+        for key in architecture_decision.keys():
+            found = False
+            for arch_ok in selected_architectures:
+                if key.endswith("-" + arch_ok):
+                    found = True
+                    break
+            if found:
+                continue
+            print(f"disabling {key} because it is not a selected architecture")
+            architecture_decision[key] = "localhost"
+
+
+        results_file = "$(results.skip-mpc-tasks.path)"
+        print("Writing into ", results_file)
+        with open(results_file, "w") as fd:
+            json.dump(architecture_decision, fd)
+        print(json.dumps(architecture_decision))
+    - name: create-trusted-artifact
+      image: quay.io/redhat-appstudio/build-trusted-artifacts:latest@sha256:9b180776a41d9a22a1c51539f1647c60defbbd55b44bbebdd4130e33512d8b0d
+      args:
+        - create
+        - --store
+        - $(params.ociStorage)
+        - $(results.dependencies-artifact.path)=/var/workdir/source
+      env:
+        - name: IMAGE_EXPIRES_AFTER
+          value: $(params.ociArtifactExpiresAfter)
+  volumes:
+    - name: workdir
+      emptyDir: {}
