@@ -138,7 +138,7 @@ spec:
         else
           remote_cmd podman run -e KOJI_TARGET="$(params.koji-target)" \
                                 "${podman_params[@]}" \
-              mock -r fedora-rawhide-"$arch" \
+              koji-mock "$(params.target-branch)" "$arch"
                   --spec /source/$(params.package-name).spec \
                   --sources /source --resultdir /results \
           || success=false

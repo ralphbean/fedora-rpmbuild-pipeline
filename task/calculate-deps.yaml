@@ -104,7 +104,7 @@ spec:
                               -v "$HOMEDIR/source:/source" \
                               -v "$HOMEDIR/results:/results" \
                               --privileged --rm -ti "$mock_img" \
-            mock -r fedora-rawhide-"$arch" \
+            koji-mock "$(params.target-branch)" "$arch" \
                 --spec /source/$(params.package-name).spec \
                 --sources /source --resultdir /results \
                 --calculate-build-dependencies \

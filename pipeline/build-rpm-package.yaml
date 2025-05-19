@@ -90,7 +90,7 @@ spec:
         configuration, dist-git-client, koji-client, and other RPM-build related
         tooling.
       name: script-environment-image
-      default: quay.io/konflux-fedora/fedora-on-konflux-tenant/environment-container:b678a3308f8d94514ff58675213067971d633a55
+      default: quay.io/konflux-fedora/fedora-on-konflux-tenant/environment-container:1520abe3e961b4c1e6ab6d9e6eee130fa9f09e62
       type: string
     - name: ociStorage
       description: |
