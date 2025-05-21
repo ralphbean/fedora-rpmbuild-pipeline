@@ -9,6 +9,7 @@ task/check-noarch.yaml
 task/get-rpm-sources.yaml
 task/import-to-quay.yaml
 task/rpmbuild.yaml
+renovate.json
 "
 
 overrides=( )
