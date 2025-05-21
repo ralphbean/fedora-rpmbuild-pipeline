@@ -1,4 +1,13 @@
-#! /bin/bash -x
+#! /bin/bash
+
+diff_flavor=$1
+test -z "$diff_flavor" && {
+    echo "Missing argument, execute either of those:"
+    echo "  $0 upstream"
+    exit 1
+}
+
+set -x
 
 TMPDIR=$(mktemp -d /tmp/compare-rpmbuild-pipeline-XXXXXX)
 
@@ -10,10 +19,15 @@ task/get-rpm-sources.yaml
 task/import-to-quay.yaml
 task/rpmbuild.yaml
 renovate.json
+diff-flavor.sh
 "
 
-overrides=( )
-raw_link=https://raw.githubusercontent.com/konflux-ci/rpmbuild-pipeline/refs/heads/main
+case $diff_flavor in
+upstream)
+    overrides=( )
+    raw_link=https://raw.githubusercontent.com/konflux-ci/rpmbuild-pipeline/refs/heads/main
+    ;;
+esac
 
 for file in $files_to_diff; do
     url=$raw_link/$file
