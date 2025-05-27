@@ -1,11 +1,29 @@
 #! /bin/bash
 
+codedir=$(dirname "$(readlink -f "$0")")
+other_flavors=$codedir/.other-flavors.sh
+
 diff_flavor=$1
-test -z "$diff_flavor" && {
-    echo "Missing argument, execute either of those:"
-    echo "  $0 upstream"
-    exit 1
-}
+
+flavors+=( "upstream" )
+upstream_raw_link=https://raw.githubusercontent.com/konflux-ci/rpmbuild-pipeline/refs/heads/main
+upstream_overrides=()
+
+test -f "$other_flavors" && source "$other_flavors"
+
+case " ${flavors[*]} " in
+    *" $diff_flavor "*)
+        eval raw_link=\$$diff_flavor\_raw_link
+        eval "overrides=( \"\${${diff_flavor}_overrides[@]}\" )"
+        ;;
+    *)
+        echo "Missing argument, execute either of those:"
+        for flavor in ${flavors[@]}; do
+            echo "  $0 $flavor"
+        done
+        exit 1
+        ;;
+esac
 
 set -x
 
@@ -21,13 +39,6 @@ task/rpmbuild.yaml
 renovate.json
 diff-flavor.sh
 "
-
-case $diff_flavor in
-upstream)
-    overrides=( )
-    raw_link=https://raw.githubusercontent.com/konflux-ci/rpmbuild-pipeline/refs/heads/main
-    ;;
-esac
 
 for file in $files_to_diff; do
     url=$raw_link/$file
