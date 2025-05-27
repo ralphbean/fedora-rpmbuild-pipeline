@@ -48,6 +48,8 @@ spec:
       type: string
     - description: RPM Build environment OCI image to run scripts in
       name: script-environment-image
+    - name: koji-build-target
+      description: Koji build target
       type: string
   results:
     - name: IMAGE_URL
@@ -119,6 +121,7 @@ spec:
              --registry-config "$HOME/auth.json" \
              --artifact-type application/vnd.rpm.build.v0 \
              --annotation quay.expires-after=14d \
+             --annotation koji.build-target="$(params.koji-build-target)" \
              $IMAGE_URL \
              `cat ../oras-push-list.txt` | tee /tmp/oras.log
 

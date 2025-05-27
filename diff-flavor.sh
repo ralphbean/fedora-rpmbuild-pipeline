@@ -33,6 +33,7 @@ files_to_diff="
 pipeline/build-rpm-package.yaml
 task/calculate-deps.yaml
 task/check-noarch.yaml
+task/get-build-target.yaml
 task/get-rpm-sources.yaml
 task/import-to-quay.yaml
 task/rpmbuild.yaml

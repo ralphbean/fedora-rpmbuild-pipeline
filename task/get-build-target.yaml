@@ -1,0 +1,36 @@
+---
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  annotations:
+    tekton.dev/tags: rpm-build
+  name: get-build-target
+spec:
+  description: Get Koji build target
+  params:
+    - description: The branch name we build against/from
+      name: target-branch
+      type: string
+    - description: Koji target to use
+      name: koji-target
+      type: string
+    - description: RPM Build environment OCI image to run scripts in
+      name: script-environment-image
+      type: string
+  results:
+    - name: koji-build-target
+      description: Koji build target
+      type: string
+  steps:
+    - name: get-build-target
+      image: $(params.script-environment-image)
+      env:
+        - name: KOJI_TARGET
+          value: $(params.koji-target)
+        - name: TARGET_BRANCH
+          value: $(params.target-branch)
+      script: |
+        #!/bin/bash
+        set -ex
+        /usr/bin/konflux-select-koji-target "$TARGET_BRANCH" \
+            > "$(results.koji-build-target.path)"
