@@ -11,7 +11,9 @@ There are a few integration steps you need to follow to enable RPM builds:
    the GitLab forge, you need to [set repo secret ][gitlab integration].
 
 3. **Create an Application/Component** in the [Konflux UI][application-pipeline]
-   for your package builds.
+   for your package builds. Until we get the [onboarding flow] integrated, this
+   will generate a pull request to your repo with a default container pipeline,
+   which you can close and ignore.
 
 4. **Add a `.tekton/` directory** to your Git project.  See [this pull
    request][example PR] for reference.
@@ -38,3 +40,4 @@ There are a few integration steps you need to follow to enable RPM builds:
 [example package]: https://github.com/praiskup/example-fedora-konflux-libecpg
 [example PR]: https://github.com/praiskup/example-fedora-konflux-libecpg/pull/2
 [gitlab integration]: https://konflux-ci.dev/docs/building/creating-secrets/#creating-source-control-secrets
+[onboarding flow]: https://gitlab.com/fedora/infrastructure/konflux/infra-deployments/-/issues/22
