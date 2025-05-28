@@ -16,8 +16,8 @@ In short, based on the provided [parameters](docs/parameters.md), the pipeline
 retrieves RPM package source code from a [DistGit][]-like repository, obtains
 Mock configuration from Fedora Koji, and builds RPMs using [Mock][].  The
 pipeline allocates architecture-specific workers to run *Mock* builds in the
-appropriate environments (`aarch64` and `x86_64`, given the current [technical
-limitations] of [Fedora Konflux][fedora konflux docs]).
+appropriate environments (`aarch64` and `x86_64`, given the current
+[infrastructure limitations] of [Fedora Konflux][fedora konflux docs]).
 
 Except for a few differences (see the [diff-flavor.sh](diff-flavor.sh) script),
 this flavor works in principle similarly to the [upstream flavor][], so please
@@ -36,5 +36,5 @@ We'd love your feedback and contributions. Please open issues, or
 [Mock]: https://rpm-software-management.github.io/mock/
 [DistGit]: https://github.com/release-engineering/dist-git
 [Fedora Koji]: https://koji.fedoraproject.org/
-[technical limitations]: https://gitlab.com/fedora/infrastructure/konflux/infra-deployments/-/issues/9
+[infrastructure limitations]: https://gitlab.com/fedora/infrastructure/konflux/infra-deployments/-/issues/9
 [fedora konflux docs]: https://github.com/konflux-ci/community/blob/main/sigs/fedora/cluster.md
