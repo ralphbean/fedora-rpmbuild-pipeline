@@ -96,7 +96,7 @@ spec:
       description: |
         OCI registry URL where the pipeline stores trusted artifacts, including
         both resulting artifacts and intermediary by-products.
-      default: "quay.io/redhat-user-workloads/$(context.taskRun.namespace)/$(params.package-name):$(params.revision)"
+      default: "quay.io/konflux-fedora/$(context.taskRun.namespace)/$(params.package-name):$(params.revision)"
 
     # This part is commented out because the parameter is not usable.  We don't
     # seem to be able to pass the given parameter down to override

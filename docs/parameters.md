@@ -4,7 +4,7 @@ Below is the set of supported parameters accepted by the pipeline.
 
 | name          | description | default value |
 | ---           | ----        | ---           |
-| ociStorage    | OCI registry URL where the pipeline stores results. | `quay.io/redhat-user-workloads/$(context.taskRun.namespace)/$(params.package-name):$(params.revision)` |
+| ociStorage    | OCI registry URL where the pipeline stores results. | `quay.io/konflux-fedora/$(context.taskRun.namespace)/$(params.package-name):$(params.revision)` |
 | package-name  | The name of the package being built. | |
 | git-url       | Source Repository URL. Typically set to `{{ source_url }}` Go template. | |
 | revision      | Revision of the Source Repository. Typically use `{{ revision }}`. | |

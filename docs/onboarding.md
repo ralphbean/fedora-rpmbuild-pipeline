@@ -28,7 +28,7 @@ There are a few integration steps you need to follow to enable RPM builds:
 6. **Download the RPMs from Quay.io**:
 
     ```bash
-    url="quay.io/redhat-user-workloads/your-tenant/your-component:d8e3fd281eaf19f54a091a7df9f7a3258c73f2a2.nvr-NVR"
+    url="quay.io/konflux-fedora/your-tenant/your-component:d8e3fd281eaf19f54a091a7df9f7a3258c73f2a2.nvr-NVR"
     mkdir -p /tmp/results && cd /tmp/results && oras pull "$url"
     ```
 **Happy building!**
