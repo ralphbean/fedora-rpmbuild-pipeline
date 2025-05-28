@@ -21,16 +21,19 @@ spec:
     - name: koji-build-target
       description: Koji build target
       type: string
+    - name: koji-mock-config-template
+      type: string
+      description: Generated Mock configuration template (as a string)
   steps:
     - name: get-build-target
       image: $(params.script-environment-image)
       env:
         - name: KOJI_TARGET
           value: $(params.koji-target)
-        - name: TARGET_BRANCH
-          value: $(params.target-branch)
       script: |
         #!/bin/bash
         set -ex
-        /usr/bin/konflux-select-koji-target "$TARGET_BRANCH" \
-            > "$(results.koji-build-target.path)"
+        : koji target override: $(params.koji-target)
+        target=$( /usr/bin/konflux-select-koji-target "$(params.target-branch)" )
+        echo -n "$target" > "$(results.koji-build-target.path)"
+        konflux-mock-profile "$(params.target-branch)" "@ARCH@" | tee "$(results.koji-mock-config-template.path)"

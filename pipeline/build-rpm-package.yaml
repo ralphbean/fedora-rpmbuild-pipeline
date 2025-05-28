@@ -255,8 +255,8 @@ spec:
           value: $(params.package-name)
         - name: target-branch
           value: $(params.target-branch)
-        - name: koji-target
-          value: $(params.koji-target)
+        - name: koji-mock-config-template
+          value: $(tasks.get-build-target.results.koji-mock-config-template)
         - name: PLATFORM
           value: $(tasks.get-rpm-sources.results.skip-mpc-tasks.deps-x86_64)
         - name: script-environment-image
@@ -285,8 +285,8 @@ spec:
           value: $(params.package-name)
         - name: target-branch
           value: $(params.target-branch)
-        - name: koji-target
-          value: $(params.koji-target)
+        - name: koji-mock-config-template
+          value: $(tasks.get-build-target.results.koji-mock-config-template)
         - name: PLATFORM
           value: $(tasks.get-rpm-sources.results.skip-mpc-tasks.build-x86_64)
         - name: script-environment-image
@@ -319,8 +319,8 @@ spec:
           value: $(params.package-name)
         - name: target-branch
           value: $(params.target-branch)
-        - name: koji-target
-          value: $(params.koji-target)
+        - name: koji-mock-config-template
+          value: $(tasks.get-build-target.results.koji-mock-config-template)
         - name: PLATFORM
           value: $(tasks.get-rpm-sources.results.skip-mpc-tasks.deps-aarch64)
         - name: script-environment-image
@@ -349,8 +349,8 @@ spec:
           value: $(params.package-name)
         - name: target-branch
           value: $(params.target-branch)
-        - name: koji-target
-          value: $(params.koji-target)
+        - name: koji-mock-config-template
+          value: $(tasks.get-build-target.results.koji-mock-config-template)
         - name: PLATFORM
           value: $(tasks.get-rpm-sources.results.skip-mpc-tasks.build-aarch64)
         - name: script-environment-image
@@ -383,8 +383,8 @@ spec:
           value: $(params.package-name)
         - name: target-branch
           value: $(params.target-branch)
-        - name: koji-target
-          value: $(params.koji-target)
+        - name: koji-mock-config-template
+          value: $(tasks.get-build-target.results.koji-mock-config-template)
         - name: PLATFORM
           value: $(tasks.get-rpm-sources.results.skip-mpc-tasks.deps-s390x)
         - name: script-environment-image
@@ -413,8 +413,8 @@ spec:
           value: $(params.package-name)
         - name: target-branch
           value: $(params.target-branch)
-        - name: koji-target
-          value: $(params.koji-target)
+        - name: koji-mock-config-template
+          value: $(tasks.get-build-target.results.koji-mock-config-template)
         - name: PLATFORM
           value: $(tasks.get-rpm-sources.results.skip-mpc-tasks.build-s390x)
         - name: script-environment-image
@@ -447,8 +447,8 @@ spec:
           value: $(params.package-name)
         - name: target-branch
           value: $(params.target-branch)
-        - name: koji-target
-          value: $(params.koji-target)
+        - name: koji-mock-config-template
+          value: $(tasks.get-build-target.results.koji-mock-config-template)
         - name: PLATFORM
           value: $(tasks.get-rpm-sources.results.skip-mpc-tasks.deps-ppc64le)
         - name: script-environment-image
@@ -477,8 +477,8 @@ spec:
           value: $(params.package-name)
         - name: target-branch
           value: $(params.target-branch)
-        - name: koji-target
-          value: $(params.koji-target)
+        - name: koji-mock-config-template
+          value: $(tasks.get-build-target.results.koji-mock-config-template)
         - name: PLATFORM
           value: $(tasks.get-rpm-sources.results.skip-mpc-tasks.build-ppc64le)
         - name: script-environment-image

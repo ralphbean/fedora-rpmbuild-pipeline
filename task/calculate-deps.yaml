@@ -21,9 +21,9 @@ spec:
     - description: The branch name we build against/from
       name: target-branch
       type: string
-    - description: Koji target to use
-      name: koji-target
+    - description: Koji's Mock configuration template file (as a string)
       type: string
+      name: koji-mock-config-template
       default: DEFAULT
     - description: RPM Build environment OCI image to run scripts in
       name: script-environment-image
@@ -92,6 +92,11 @@ spec:
         workdir=/var/workdir
 
         remote_cmd echo "Hello from the other side!"
+
+        test "$(params.koji-mock-config-template)" != DEFAULT
+        echo "$(params.koji-mock-config-template)" | sed "s|@ARCH@|$arch|" | tee "$workdir/mock.cfg"
+        send "$workdir/mock.cfg" "$HOMEDIR/mock.cfg"
+
         send "$workdir/source/" "$HOMEDIR/source"
 
         remote_cmd mkdir "$HOMEDIR/results"
@@ -100,11 +105,11 @@ spec:
         remote_cmd podman pull "$mock_img"
 
         success=true
-        remote_cmd podman run -e KOJI_TARGET="$(params.koji-target)" \
-                              -v "$HOMEDIR/source:/source" \
+        remote_cmd podman run -v "$HOMEDIR/source:/source" \
                               -v "$HOMEDIR/results:/results" \
+                              -v "$HOMEDIR/mock.cfg:/mock.cfg" \
                               --privileged --rm -ti "$mock_img" \
-            koji-mock "$(params.target-branch)" "$arch" \
+            mock -r /mock.cfg \
                 --spec /source/$(params.package-name).spec \
                 --sources /source --resultdir /results \
                 --calculate-build-dependencies \
