@@ -1,7 +1,7 @@
 # Tekton Pipeline for Building Fedora RPMs
 
 This is the **Fedora flavor** of the Tekton RPM Build Pipeline, which allows you
-to easily build [Fedora packages][] in [Fedora Konflux][].
+to build [Fedora packages][] in [Fedora Konflux][].
 
 The main difference compared to the [upstream flavor][] is that the Fedora
 flavor builds against Fedora "buildroots" (RPM package repositories hosted by
