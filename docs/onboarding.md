@@ -27,7 +27,8 @@ There are a few integration steps you need to follow to enable RPM builds:
    successfully (green) → merge the PR → wait for the Tekton `push` pipeline run
    to finish the RPM build.
 
-6. **Download the RPMs from Quay.io**:
+6. **Download the RPMs from Quay.io**: using [oras][oras] or [podman
+   artifact][podman artifact].
 
     ```bash
     url="quay.io/konflux-fedora/your-tenant/your-component:d8e3fd281eaf19f54a091a7df9f7a3258c73f2a2.nvr-NVR"
@@ -41,3 +42,5 @@ There are a few integration steps you need to follow to enable RPM builds:
 [example PR]: https://github.com/praiskup/example-fedora-konflux-libecpg/pull/2
 [gitlab integration]: https://konflux-ci.dev/docs/building/creating-secrets/#creating-source-control-secrets
 [onboarding flow]: https://gitlab.com/fedora/infrastructure/konflux/infra-deployments/-/issues/22
+[oras]: https://oras.land
+[podman artifact]: https://docs.podman.io/en/v5.4.0/markdown/podman-artifact.1.html
