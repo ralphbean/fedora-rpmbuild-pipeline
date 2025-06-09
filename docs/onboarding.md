@@ -10,6 +10,9 @@ There are a few integration steps you need to follow to enable RPM builds:
 2. **Enable the [GitHub Konflux application][gh app]** for your project.  For
    the GitLab forge, you need to [set repo secret ][gitlab integration].
 
+3. **Create or get access to a Konflux tenant**.  There's a GitOps work-flow for
+   this, see [example merge-request][new-tenant].
+
 3. **Create an Application/Component** in the [Konflux UI][application-pipeline]
    for your package builds. Until we get the [onboarding flow] integrated, this
    will generate a pull request to your repo with a default container pipeline,
@@ -44,3 +47,4 @@ There are a few integration steps you need to follow to enable RPM builds:
 [onboarding flow]: https://gitlab.com/fedora/infrastructure/konflux/infra-deployments/-/issues/22
 [oras]: https://oras.land
 [podman artifact]: https://docs.podman.io/en/v5.4.0/markdown/podman-artifact.1.html
+[new-tenant]: https://gitlab.com/fedora/infrastructure/konflux/tenants-config/-/merge_requests/31/diffs
