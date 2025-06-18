@@ -3,6 +3,7 @@ apiVersion: tekton.dev/v1
 kind: PipelineRun
 metadata:
   annotations:
+
     build.appstudio.openshift.io/repo: https://gitlab.com/fedora/infrastructure/konflux/rpmbuild-pipeline/-/tree/{{revision}}
     build.appstudio.redhat.com/commit_sha: '{{revision}}'
     build.appstudio.redhat.com/pull_request_number: '{{pull_request_number}}'
