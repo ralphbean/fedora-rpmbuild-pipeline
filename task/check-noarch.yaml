@@ -12,15 +12,6 @@ spec:
     - description: The Trusted Artifact URI pointing to the x86_64 build output
       name: x86_64-artifact
       type: string
-    - description: The Trusted Artifact URI pointing to the aarch64 build output
-      name: aarch64-artifact
-      type: string
-    - description: The Trusted Artifact URI pointing to the s390x build output
-      name: s390x-artifact
-      type: string
-    - description: The Trusted Artifact URI pointing to the ppc64le build output
-      name: ppc64le-artifact
-      type: string
     - description: RPM Build environment OCI image to run scripts in
       name: script-environment-image
       type: string
@@ -34,21 +25,6 @@ spec:
       args:
         - use
         - $(params.x86_64-artifact)=/var/workdir/results
-    - name: use-trusted-artifact-aarch64
-      image: quay.io/redhat-appstudio/build-trusted-artifacts:latest@sha256:9b180776a41d9a22a1c51539f1647c60defbbd55b44bbebdd4130e33512d8b0d
-      args:
-        - use
-        - $(params.aarch64-artifact)=/var/workdir/results
-    - name: use-trusted-artifact-s390x
-      image: quay.io/redhat-appstudio/build-trusted-artifacts:latest@sha256:9b180776a41d9a22a1c51539f1647c60defbbd55b44bbebdd4130e33512d8b0d
-      args:
-        - use
-        - $(params.s390x-artifact)=/var/workdir/results
-    - name: use-trusted-artifact-ppc64le
-      image: quay.io/redhat-appstudio/build-trusted-artifacts:latest@sha256:9b180776a41d9a22a1c51539f1647c60defbbd55b44bbebdd4130e33512d8b0d
-      args:
-        - use
-        - $(params.ppc64le-artifact)=/var/workdir/results
     - name: check-noarch
       image: $(params.script-environment-image)
       script: |
